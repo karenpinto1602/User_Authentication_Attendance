@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="action_settings">Settings</string>
+    <string name="login">LOGIN IN</string>
+    <string name="signup">SIGN UP</string>
+    <string name="signout">SIGN OUT</string>
+</resources>
