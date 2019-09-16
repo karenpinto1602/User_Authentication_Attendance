@@ -1,81 +1,109 @@
 package com.example.myapplication;
 
+import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.SignInButton;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 public class MainActivity extends AppCompatActivity {
 
-    FirebaseAuth firebaseAuth;
-    FirebaseUser firebaseUser;
+    //Google Sign In
+    private static final String TAG = "GoogleActivity";
+    private static final int RC_SIGN_IN = 9001;
 
-    EditText emailstudent;
-    EditText passwordstudent;
-    Button login;
-    Button signup;
+    //Google sign in
+    private GoogleSignInClient mGoogleSignInClient;
+
+    Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.student_activity);
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-
-        emailstudent = findViewById(R.id.emaillogin);
-        passwordstudent = findViewById(R.id.passwordlogin);
-        login = findViewById(R.id.loginButton);
-        signup = findViewById(R.id.signupButton);
-        signup.setPaintFlags(signup.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        //PROGRESS DIALOG BOX
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setView(R.layout.progress);
+        dialog = builder.create();
 
 
-        //INTENT TO STUDENT CLASS
-        login.setOnClickListener(
-                new View.OnClickListener() {
+        // SET THE DIMENSIONS OF THE SIGN IN BUTTON
+        SignInButton signInButton = findViewById(R.id.sign_in_button);
+        signInButton.setSize(SignInButton.SIZE_STANDARD);
+
+        // CONFIGURE GOOGLE SIGN IN
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        // [END CONFIG OF SIGN IN]
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+
+        signInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
-
-                //USING EMAIL
-                firebaseAuth.signInWithEmailAndPassword(emailstudent.getText().toString(), passwordstudent .getText().toString())
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            startActivity(new Intent(MainActivity.this, Student_Profile.class));
-
-                        } else {
-                            Toast.makeText(MainActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-
+                setDialog(true);
+                signIn();
             }
         });
 
-        //INTENT TO STUDENT SIGN UP
-        signup.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View arg0) {
 
-                // Start NewActivity.class
-                Intent myIntent;
-                myIntent = new Intent(MainActivity.this,
-                        Student_Sign_up.class);
-                startActivity(myIntent);
+
+    }
+
+    private void handleSignInResult(GoogleSignInResult result) {
+        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+                       Log.d(TAG, "handleSignInResult: Success");
+
+            setDialog(true);
+            Intent myIntent = new Intent(MainActivity.this, Student_Profile.class);
+            startActivity(myIntent);
+            finish();
+            setDialog(false);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            setDialog(false);
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
             }
-        });
+
+    }
+
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent,RC_SIGN_IN);
+    }
+
+    //PROGRESS DIALOG
+    private void setDialog(boolean show){
+        if (show) {
+            dialog.show();
+        }
+        else
+            dialog.dismiss();
     }
 
 }
+

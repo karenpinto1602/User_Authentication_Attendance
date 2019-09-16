@@ -1,17 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".Student_Profile"
     android:orientation="vertical"
+    android:background="@drawable/user_background2"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:gravity="center"
-        android:text="WELCOME"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </TextView>
+    <LinearLayout
+        android:id="@+id/profilelayout"
+        android:layout_width="300dp"
+        android:layout_height="500dp"
+        android:background="@drawable/signin_round_corners"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-</LinearLayout>
+        <TextView
+            android:text="Student Profile"
+            android:textAllCaps="true"
+            android:textStyle="bold|italic"
+            android:gravity="center_horizontal"
+            android:paddingTop="20dp"
+            android:textSize="20sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </TextView>
+
+        <TextView
+            android:id="@+id/name"
+            android:paddingTop="20dp"
+            android:text="Student"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </TextView>
+        <TextView
+            android:id="@+id/UID"
+            android:text="UID NUMBER"
+            android:paddingTop="20dp"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </TextView>
+
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
